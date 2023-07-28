@@ -1,0 +1,40 @@
+version: '3'
+services:
+  mongodb:
+    image: mongo
+    ports:
+      - "27017:27017"
+    volumes:
+      - ./data:/data/db
+    networks:
+      - todo-list-network
+
+  nodejs:
+    build:
+      context: ./backend  # Path to your Node.js (Express.js) server code
+      dockerfile: Dockerfile
+    container_name: backend
+    ports:
+      - "5000:5000"
+    depends_on:
+      - mongodb
+    networks:
+      - todo-list-network
+    volumes:
+      - ./backend:/app  # Mount the backend code as a volume
+
+  reactjs:
+    build:
+      context: ./frontend  # Path to your React.js front-end code
+      dockerfile: Dockerfile
+    container_name: frontend
+    ports:
+      - "3000:3000"
+    networks:
+      - todo-list-network
+    volumes:
+      - ./frontend:/app  # Mount the frontend code as a volume
+
+networks:
+  todo-list-network:
+    driver: bridge
